@@ -1,7 +1,7 @@
 import sys,os,time
 from core.headers import headers
 from core.token import get_token
-from core.info import get_info, get_info_energy, get_user_dao, get_username, banner
+from core.info import get_info, get_fullname, get_username, banner
 from core.task import Task
 from threading import Thread
 from datetime import datetime
@@ -28,11 +28,11 @@ class Game:
         else:
             os.system('clear')  # For Linux/Unix
     
-    def check_and_mine(self,token,info):
+    def check_and_mine(self,token,fullname):
         task = Task([token])
         mining_result = task.start_mining()
         if not mining_result:
-            print(f"Mining stopped for: {info} due to low energy.")
+            print(f"Mining stopped for: {fullname} due to low energy.")
             return False
         return True
                     
@@ -48,17 +48,16 @@ class Game:
                 if token:
                     tokens.append(token)
                     info = get_info(token=token)
+                    fullname = get_fullname(token=token)
                     username = get_username(token=token)
                     print("===============================")
                     print(f"{dt_string}")
-                    print(f"Info: {info}")
+                    print(f"Processing account: {fullname}")
                     
-                    if self.check_and_mine(token, info):
-                        print("Mining successful.")
- 
+                    if self.check_and_mine(token, fullname):
+                        return True
                     else:
                         print(f"Mining stopped due to low energy, moving to next user.")
-                        print(f"Info: {info}")
                         print("===============================")
                     
             print(f"{dt_string}")  

@@ -33,6 +33,16 @@ def get_info(token):
     energy = data.get('energy', 'No energy provided')
     return full_name, coins, energy
 
+def get_fullname(token):
+    url = (
+        "https://app.production.tonxdao.app/api/v1/profile"
+    )
+    auth_headers = headers(token)
+    response = requests.get(url=url, headers=auth_headers)
+    data = response.json()
+    full_name = data.get('full_name', 'No name provided')
+    return full_name
+
 def get_info_coin(token):
     url = (
         "https://app.production.tonxdao.app/api/v1/profile"

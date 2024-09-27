@@ -5,6 +5,7 @@ from core.info import get_user_dao, get_token, get_username, get_info_energy, ge
 from datetime import datetime
 
 energy_global = None
+coins_global = None
 class Task:
     def __init__(self, tokens):
         self.tokens = tokens
@@ -92,8 +93,10 @@ class Task:
                     response_data = json.loads(response)
                     if 'rpc' in response_data:
                         global energy_global
+                        global coins_global
                         energy_global = response_data["rpc"]["data"]["energy"]
-                        print(f"{dt_string} Energy: {energy_global}")
+                        coins_global = response_data["rpc"]["data"]["coins"]
+                        print(f"{dt_string} Energy: {energy_global} Coins: {coins_global}")
                     self.apply_changes(account_index, json.loads(response))
                     
                 if energy_global < 5:
