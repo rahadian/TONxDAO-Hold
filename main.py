@@ -61,8 +61,8 @@ class Game:
                         print("===============================")
                     
             print(f"{dt_string}")  
-            print("All users have low energy, pausing for 1 hour...")
-            time.sleep(3600)
+            print("All users have low energy, pausing for 4 hours...")
+            time.sleep(14400)
             self.clear_terminal()
                         
                     
