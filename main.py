@@ -1,7 +1,7 @@
 import sys,os,time
 from core.headers import headers
 from core.token import get_token
-from core.info import get_info, get_fullname, get_username, banner
+from core.info import get_info, get_fullname, get_username, banner, get_daily_info, get_daily_claim
 from core.task import Task
 from threading import Thread
 from datetime import datetime
@@ -50,7 +50,14 @@ class Game:
                     info = get_info(token=token)
                     fullname = get_fullname(token=token)
                     username = get_username(token=token)
+                    daily_info = get_daily_info(token=token)
+                    daily_claim = get_daily_claim(token=token)
                     print("===============================")
+                    if daily_info == "True":
+                        print(f"Daily claim available: {daily_info}")
+                        print(f"Daily claim : {daily_claim}")
+                    else:
+                        print(f"Daily claim available: {daily_info}")
                     print(f"{dt_string}")
                     print(f"Processing account: {fullname}")
                     

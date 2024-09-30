@@ -86,6 +86,26 @@ def get_username(token):
     for data in tokens:
         return json.loads(parse_qs(data)['user'][0]).get('username', '<NOT SET>')
 
+def get_daily_info(token):
+    url = (
+        "https://app.production.tonxdao.app/api/v1/tasks/daily"
+    )
+    auth_headers = headers(token)
+    response = requests.get(url=url, headers=auth_headers)
+    data = response.json()
+    is_available = data.get('is_available', 'No data provided')
+    return is_available
+
+def get_daily_claim(token):
+    url = (
+        "https://app.production.tonxdao.app/api/v1/tasks/daily/claim"
+    )
+    auth_headers = headers(token)
+    response = requests.post(url=url, headers=auth_headers)
+    data = response.json()
+    is_success = data.get('success', 'No data provided')
+    return is_success
+
 def config(name, default):
     with open("config.json", 'r') as file:
         config = json.load(file)
