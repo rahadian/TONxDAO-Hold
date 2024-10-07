@@ -1,6 +1,10 @@
-import requests,json,os
+import requests,json,os,time,logging
 from core.headers import headers
 from urllib.parse import unquote, parse_qs
+from requests.exceptions import RequestException
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 def clear():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -63,14 +67,34 @@ def get_info_energy(token):
     energy = data.get('energy', 'No energy provided')
     return energy
 
-def get_user_dao(token):
+def get_user_dao(token, max_retries=3, initial_delay=1):
     url = (
         "https://app.production.tonxdao.app/api/v1/dao_users"
     )
     auth_headers = headers(token)
-    response = requests.get(url=url, headers=auth_headers)
-    data = response.json()
-    return data
+    for attempt in range(max_retries):
+        try:
+            response = requests.get(url=url, headers=auth_headers)
+            response.raise_for_status()
+            try:
+                data = response.json()
+                return data
+            except json.JSONDecodeError as json_err:
+                logger.error(f"JSON decode error: {json_err}")
+                logger.debug(f"Raw response: {response.text}")
+            
+            if attempt == max_retries -1 :
+                raise
+        except RequestException as req_err:
+            logger.error(f"Request Failed: {req_err}")
+            
+            if attempt == max_retries -1 :
+                raise
+        delay = initial_delay * (2 ** attempt)
+        logger.info(f"Retrying in {delay} seconds...")
+        time.sleep(delay)
+    
+    raise Exception("Max retries reached. Unable to get user DAO information.")
 
 def get_token(token):
     url = (

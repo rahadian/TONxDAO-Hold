@@ -69,6 +69,7 @@ class Game:
                         print(f"processing task tiktok ...")
                         tiktok_info
                         tiktok_claim
+                        print(f"processing task tiktok: Done")
                     
                     if self.check_and_mine(token, fullname):
                         return True
