@@ -106,6 +106,26 @@ def get_daily_claim(token):
     is_success = data.get('success', 'No data provided')
     return is_success
 
+def get_tiktok_info(token):
+    url = (
+        "https://app.production.tonxdao.app/api/v1/tasks/80/start"
+    )
+    auth_headers = headers(token)
+    response = requests.post(url=url, headers=auth_headers)
+    data = response.json()
+    message = data.get('message')
+    return message
+
+def get_tiktok_claim(token):
+    url = (
+        "https://app.production.tonxdao.app/api/v1/tasks/80/claim"
+    )
+    auth_headers = headers(token)
+    response = requests.post(url=url, headers=auth_headers)
+    data = response.json()
+    message = data.get('message')
+    return message
+
 def config(name, default):
     with open("config.json", 'r') as file:
         config = json.load(file)

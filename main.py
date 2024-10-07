@@ -1,7 +1,7 @@
 import sys,os,time
 from core.headers import headers
 from core.token import get_token
-from core.info import get_info, get_fullname, get_username, banner, get_daily_info, get_daily_claim
+from core.info import get_info, get_fullname, get_username, banner, get_daily_info, get_daily_claim, get_tiktok_info, get_tiktok_claim
 from core.task import Task
 from threading import Thread
 from datetime import datetime
@@ -52,6 +52,8 @@ class Game:
                     username = get_username(token=token)
                     daily_info = get_daily_info(token=token)
                     daily_claim = get_daily_claim(token=token)
+                    tiktok_info = get_tiktok_info(token=token)
+                    tiktok_claim = get_tiktok_claim(token=token)
                     print("===============================")
                     if daily_info == "True":
                         print(f"Daily claim available: {daily_info}")
@@ -60,6 +62,13 @@ class Game:
                         print(f"Daily claim available: {daily_info}")
                     print(f"{dt_string}")
                     print(f"Processing account: {fullname}")
+                    
+                    if(tiktok_claim == "Task already claimed"):
+                        print(f"tiktok task claim : {tiktok_claim}")
+                    else:
+                        print(f"processing task tiktok ...")
+                        tiktok_info
+                        tiktok_claim
                     
                     if self.check_and_mine(token, fullname):
                         return True
