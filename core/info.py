@@ -150,6 +150,26 @@ def get_tiktok_claim(token):
     message = data.get('message')
     return message
 
+def get_emoji_info(token):
+    url = (
+        "https://app.production.tonxdao.app/api/v1/tasks/88/start"
+    )
+    auth_headers = headers(token)
+    response = requests.post(url=url, headers=auth_headers)
+    data = response.json()
+    message = data.get('message')
+    return message
+
+def get_emoji_claim(token):
+    url = (
+        "https://app.production.tonxdao.app/api/v1/tasks/88/claim"
+    )
+    auth_headers = headers(token)
+    response = requests.post(url=url, headers=auth_headers)
+    data = response.json()
+    message = data.get('message')
+    return message
+
 def config(name, default):
     with open("config.json", 'r') as file:
         config = json.load(file)
