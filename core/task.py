@@ -1,7 +1,7 @@
 import json,time,asyncio,websockets,requests, os, sys, threading
 from concurrent.futures import ThreadPoolExecutor
 from core.headers import headers
-from core.info import get_user_dao, get_token, get_username, get_info_energy, get_info_coin, config
+from core.info import get_user_dao, get_token, get_username, get_info_energy, get_info_coin, get_fullname, config
 from datetime import datetime
 
 energy_global = None
@@ -13,6 +13,7 @@ class Task:
         self.socket_tokens = [None] * len(tokens)
         self.counter = [0] * len(tokens)
         self.info = [{} for _ in range(len(tokens))]  # Initialize self.info as a list of dictionaries
+        self.fullnames = [get_fullname(token) for token in tokens]
     
     def clear_terminal(self):
         """Clears the terminal screen."""
@@ -78,6 +79,7 @@ class Task:
         uri = 'wss://ws.production.tonxdao.app/ws'
         now = datetime.now()
         dt_string = now.strftime("%d-%m-%Y %H:%M:%S")
+        fullname = self.fullnames[account_index]
         async with websockets.connect(uri) as websocket:
             while True:
                 await websocket.send(self.auth_message(account_index))
@@ -96,11 +98,13 @@ class Task:
                         global coins_global
                         energy_global = response_data["rpc"]["data"]["energy"]
                         coins_global = response_data["rpc"]["data"]["coins"]
-                        print(f"{dt_string} Energy: {energy_global} Coins: {coins_global}")
+                        if energy_global < 0 :
+                            energy_global = 0
+                        print(f"{dt_string} {fullname} Energy: {energy_global} Coins: {coins_global}")
                     self.apply_changes(account_index, json.loads(response))
                     
                 if energy_global < 5:
-                    print(f"Energy is too low ({energy_global}). Stopping mining for this token.")
+                    print(f"Energy is too low. Stopping mining for {fullname}.")
                     return False 
 
     def run_websocket(self, account_index):
