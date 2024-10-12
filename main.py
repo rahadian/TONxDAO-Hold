@@ -89,12 +89,27 @@ class Game:
                     print("All users have low energy, pausing for 1 hours...")
                     time.sleep(3600)
                     banner()
-                
+                else:
+                    break
+
+    def restart_script(self):
+            print("Restarting the script...")
+            python = sys.executable
+            os.execl(python, python, *sys.argv)
+
+def run_with_restart():
+    while True:
+        try:
+            game = Game()
+            game.main()
+        except KeyboardInterrupt:
+            print("\nScript terminated by user. Exiting...")
+            sys.exit()
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            print("Restarting the script in 60 seconds...")
+            time.sleep(60)
 
 if __name__ == "__main__":
     banner()
-    try:
-        game = Game()
-        game.main()
-    except KeyboardInterrupt:
-        sys.exit()
+    run_with_restart()
