@@ -70,6 +70,8 @@ class Game:
         mining_result = task.start_mining()
         if not mining_result:
             print(f"Mining stopped for: {fullname} due to low energy.")
+            print("===============================")
+            os.system('echo "\n"')
             return False
         return True
 
