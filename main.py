@@ -81,16 +81,15 @@ class Game:
             with concurrent.futures.ThreadPoolExecutor() as executor:
                 futures = [executor.submit(self.process_user, data_entry) for data_entry in data]
                 results = [future.result() for future in concurrent.futures.as_completed(futures)]
-            
+                
                 if not any(results):
                     now = datetime.now()
                     dt_string = now.strftime("%d-%m-%Y %H:%M:%S")
                     print(f"{dt_string}")  
-                    print("All users have low energy, pausing for 4 hours...")
-                    time.sleep(14400)
-                    self.clear_terminal()
-                else:
-                    break
+                    print("All users have low energy, pausing for 1 hours...")
+                    time.sleep(3600)
+                    banner()
+                
 
 if __name__ == "__main__":
     banner()
