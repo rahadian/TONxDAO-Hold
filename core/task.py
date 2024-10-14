@@ -80,64 +80,50 @@ class Task:
     async def start_async_mining(self, account_index):
         uri = 'wss://ws.production.tonxdao.app/ws'
         fullname = self.fullnames[account_index]
-        async with websockets.connect(uri) as websocket:
-            while True:
-                await websocket.send(self.auth_message(account_index))
-                response = await websocket.recv()
-                # print(f"detail:{response}")
-                await websocket.send(self.click_message(account_index))
+        while True:
+            try:
+                async with websockets.connect(uri) as websocket:
+                    while True:
+                        await websocket.send(self.auth_message(account_index))
+                        response = await websocket.recv()
+                        # print(f"detail:{response}")
+                        await websocket.send(self.click_message(account_index))
 
-                time.sleep(config('delay_in_sending_message', .1))
+                        await asyncio.sleep(config('delay_in_sending_message', 0.1))
 
-                for _ in range(config('number_of_display_message', 2)):
-                    await websocket.send(self.display_message(account_index))
-                    response = await websocket.recv()
-                    response_data = json.loads(response)
-                    if 'rpc' in response_data:
-                        global energy_global
-                        global coins_global
-                        energy_global = response_data["rpc"]["data"]["energy"]
-                        coins_global = response_data["rpc"]["data"]["coins"]
-                        if energy_global < 0 :
-                            energy_global = 0
-                        print(f"{dt_string} {fullname} Energy: {energy_global} Coins: {coins_global}")
-                    self.apply_changes(account_index, json.loads(response))
+                        for _ in range(config('number_of_display_message', 2)):
+                            await websocket.send(self.display_message(account_index))
+                            response = await websocket.recv()
+                            response_data = json.loads(response)
+                            if 'rpc' in response_data:
+                                global energy_global,coins_global
+                                energy_global = response_data["rpc"]["data"]["energy"]
+                                coins_global = response_data["rpc"]["data"]["coins"]
+                                if energy_global < 0 :
+                                    energy_global = 0
+                                print(f"{dt_string} {fullname} Energy: {energy_global} Coins: {coins_global}")
+                            self.apply_changes(account_index, response_data)
+                            
+                        if energy_global < 5:
+                            print(f"Energy is too low. Stopping mining for {fullname}.")
+                            return False
                     
-                if energy_global < 5:
-                    print(f"Energy is too low. Stopping mining for {fullname}.")
-                    return False 
+            except websockets.exceptions.ConnectionClosed:
+                print(f"{dt_string} Connection closed for {fullname}. Reconnecting...")
+                await asyncio.sleep(1)  # Wait before reconnecting
+            except Exception as e:
+                print(f"{dt_string} Error occurred for {fullname}: {str(e)}. Reconnecting...")
+                await asyncio.sleep(1)  # Wait before reconnecting
 
     def run_websocket(self, account_index):
         asyncio.run(self.start_async_mining(account_index))
     
-    def run_websocket_forever(self, account_index):
-        """Run WebSocket mining task in a thread, keeping the connection alive."""
-        while True:
-            try:
-                print(f"{dt_string} Starting WebSocket connection for {self.fullnames[account_index]}...")
-                asyncio.run(self.start_async_mining(account_index))
-            except websockets.ConnectionClosed:
-                print(f"{dt_string} Connection lost for {self.fullnames[account_index]}. Reconnecting...")
-                time.sleep(1)  # Retry delay
-
     def __mining(self):
-        while True:
-            try:
-                with ThreadPoolExecutor(max_workers=len(self.tokens)) as executor:
-                    futures = [executor.submit(self.run_websocket_forever, account_index) for account_index in range(len(self.tokens))]
-                    for future in futures:
-                        future.result()
-                        # print(f"future:{future}") 
-                if energy_global > 5:
-                    input()
-                else:
-                    return False
+        with ThreadPoolExecutor(max_workers=len(self.tokens)) as executor:
+            futures = [executor.submit(self.run_websocket, account_index) for account_index in range(len(self.tokens))]
+            for future in futures:
+                future.result()
 
-            except KeyboardInterrupt:
-                break
-            except Exception as E:
-                # print(E)
-                pass
             
 
     def start_mining(self):
