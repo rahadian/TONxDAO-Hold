@@ -87,7 +87,7 @@ class Task:
                 # print(f"detail:{response}")
                 await websocket.send(self.click_message(account_index))
 
-                time.sleep(config('delay_in_sending_message', .01))
+                time.sleep(config('delay_in_sending_message', .1))
 
                 for _ in range(config('number_of_display_message', 2)):
                     await websocket.send(self.display_message(account_index))
