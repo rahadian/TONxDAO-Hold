@@ -87,7 +87,7 @@ class Task:
                 # print(f"detail:{response}")
                 await websocket.send(self.click_message(account_index))
 
-                time.sleep(config('delay_in_sending_message', .02))
+                time.sleep(config('delay_in_sending_message', .01))
 
                 for _ in range(config('number_of_display_message', 2)):
                     await websocket.send(self.display_message(account_index))
@@ -109,6 +109,16 @@ class Task:
 
     def run_websocket(self, account_index):
         asyncio.run(self.start_async_mining(account_index))
+    
+    def run_websocket_forever(self, account_index):
+        """Run WebSocket mining task in a thread, keeping the connection alive."""
+        while True:
+            try:
+                print(f"Starting WebSocket connection for {self.fullnames[account_index]}...")
+                asyncio.run(self.start_async_mining(account_index))
+            except websockets.ConnectionClosed:
+                print(f"Connection lost for {self.fullnames[account_index]}. Reconnecting...")
+                time.sleep(5)  # Retry delay
 
     def __mining(self):
         while True:

@@ -39,6 +39,7 @@ class Game:
         emoji_info = get_emoji_info(token=token)
         emoji_claim = get_emoji_claim(token=token)
         
+        
         if daily_info == "True":
             print(f"Daily claim available for user {fullname}: {daily_info}")
             print(f"Daily claim for user {fullname}: {daily_claim}")
@@ -61,7 +62,6 @@ class Game:
             emoji_claim
             print(f"processing task emoji for user {fullname}: Done")
         
-        
         task = Task([token])
         mining_result = task.start_mining()
         if not mining_result:
@@ -74,40 +74,20 @@ class Game:
         while True:
             with open(self.data_file, "r") as file:
                 data = file.read().splitlines()
-                
-            unprocessed_users = list(range(len(data)))
-            max_retries = 3
             
-            for _ in range(max_retries):
-                with concurrent.futures.ThreadPoolExecutor() as executor:
-                    futures = {executor.submit(self.process_user, data[i]): i for i in unprocessed_users}
-                    
-                    for future in concurrent.futures.as_completed(futures):
-                        user_index = futures[future]
-                        try:
-                            result = future.result()
-                            if result:
-                                unprocessed_users.remove(user_index)
-                        except Exception as e:
-                            print(f"Error processing user {user_index}: {e}")
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                futures = [executor.submit(self.process_user, data_entry) for data_entry in data]
+                results = [future.result() for future in concurrent.futures.as_completed(futures)]
                 
-                if not unprocessed_users:
+                if not any(results):
+                    now = datetime.now()
+                    dt_string = now.strftime("%d-%m-%Y %H:%M:%S")
+                    print(f"{dt_string}")  
+                    print("All users have low energy, pausing for 1 hours...")
+                    time.sleep(3600)
+                    banner()
+                else:
                     break
-                
-                print(f"Retrying for {len(unprocessed_users)} unprocessed users...")
-            
-            if unprocessed_users:
-                print(f"Warning: {len(unprocessed_users)} users could not be processed after {max_retries} attempts.")
-            
-            if all(not self.process_user(data[i]) for i in range(len(data))):
-                now = datetime.now()
-                dt_string = now.strftime("%d-%m-%Y %H:%M:%S")
-                print(f"{dt_string}")  
-                print("All users have low energy, pausing for 1 hour...")
-                time.sleep(3600)
-                banner()
-            else:
-                break
 
     def restart_script(self):
             print("Restarting the script...")
