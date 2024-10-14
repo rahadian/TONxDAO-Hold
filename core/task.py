@@ -6,6 +6,8 @@ from datetime import datetime
 
 energy_global = None
 coins_global = None
+now = datetime.now()
+dt_string = now.strftime("%d-%m-%Y %H:%M:%S")
 class Task:
     def __init__(self, tokens):
         self.tokens = tokens
@@ -77,8 +79,6 @@ class Task:
 
     async def start_async_mining(self, account_index):
         uri = 'wss://ws.production.tonxdao.app/ws'
-        now = datetime.now()
-        dt_string = now.strftime("%d-%m-%Y %H:%M:%S")
         fullname = self.fullnames[account_index]
         async with websockets.connect(uri) as websocket:
             while True:
@@ -114,17 +114,17 @@ class Task:
         """Run WebSocket mining task in a thread, keeping the connection alive."""
         while True:
             try:
-                print(f"Starting WebSocket connection for {self.fullnames[account_index]}...")
+                print(f"{dt_string} Starting WebSocket connection for {self.fullnames[account_index]}...")
                 asyncio.run(self.start_async_mining(account_index))
             except websockets.ConnectionClosed:
-                print(f"Connection lost for {self.fullnames[account_index]}. Reconnecting...")
+                print(f"{dt_string} Connection lost for {self.fullnames[account_index]}. Reconnecting...")
                 time.sleep(5)  # Retry delay
 
     def __mining(self):
         while True:
             try:
                 with ThreadPoolExecutor(max_workers=len(self.tokens)) as executor:
-                    futures = [executor.submit(self.run_websocket, account_index) for account_index in range(len(self.tokens))]
+                    futures = [executor.submit(self.run_websocket_forever, account_index) for account_index in range(len(self.tokens))]
                     for future in futures:
                         future.result()
                         # print(f"future:{future}") 
