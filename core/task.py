@@ -118,7 +118,7 @@ class Task:
                 asyncio.run(self.start_async_mining(account_index))
             except websockets.ConnectionClosed:
                 print(f"{dt_string} Connection lost for {self.fullnames[account_index]}. Reconnecting...")
-                time.sleep(5)  # Retry delay
+                time.sleep(1)  # Retry delay
 
     def __mining(self):
         while True:
