@@ -118,7 +118,11 @@ def get_daily_info(token):
     response = requests.get(url=url, headers=auth_headers)
     data = response.json()
     is_available = data.get('is_available', 'No data provided')
-    return is_available
+    reward = data.get('reward','No data provided')
+    if is_available == True:
+        return is_available
+    else :
+        return reward
 
 def get_daily_claim(token):
     url = (
