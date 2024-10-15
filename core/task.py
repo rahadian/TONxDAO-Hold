@@ -105,14 +105,14 @@ class Task:
                             self.apply_changes(account_index, response_data)
                             
                         if energy_global < 5:
-                            print(f"Energy is too low. Stopping mining for {fullname}.")
+                            print(f"⛔ Energy is too low. Stopping mining for {fullname}.")
                             return False
                     
             except websockets.exceptions.ConnectionClosed:
-                print(f"{dt_string} Connection closed for {fullname}. Reconnecting...")
+                print(f"{dt_string} ❌ Connection closed for {fullname}. Reconnecting...")
                 await asyncio.sleep(1)  # Wait before reconnecting
             except Exception as e:
-                print(f"{dt_string} Error occurred for {fullname}: {str(e)}. Reconnecting...")
+                print(f"{dt_string} ❌ Error occurred for {fullname}: {str(e)}. Reconnecting...")
                 await asyncio.sleep(1)  # Wait before reconnecting
 
     def run_websocket(self, account_index):

@@ -44,7 +44,7 @@ class Game:
             print(f"Daily claim available for user {fullname}: {daily_info}")
             print(f"Daily claim for user {fullname}: {daily_claim}")
         else:
-            print(f"Daily claim available for user {fullname}: {daily_info}")
+            print(f"Daily claim available for user {fullname}: {daily_info} ✅")
         
         if tiktok_claim == "Task already claimed":
             print(f"tiktok task claim for user {fullname} : {tiktok_claim}")
@@ -52,7 +52,7 @@ class Game:
             print(f"processing task tiktok for user {fullname} ...")
             tiktok_info
             tiktok_claim
-            print(f"processing task tiktok for user {fullname}: Done")
+            print(f"processing task tiktok for user {fullname}: Done ✅")
         
         if emoji_claim == "Task already claimed":
             print(f"emoji task claim for user {fullname}: {emoji_claim}")
@@ -60,13 +60,12 @@ class Game:
             print(f"processing task emoji ...")
             emoji_info
             emoji_claim
-            print(f"processing task emoji for user {fullname}: Done")
+            print(f"processing task emoji for user {fullname}: Done ✅")
         
         task = Task([token])
         mining_result = task.start_mining()
         if not mining_result:
-            print(f"Mining stopped for: {fullname} due to low energy.")
-            print("===============================")
+            print(f"⛔ Mining stopped for: {fullname} due to low energy.")
             return False
         return True
 
@@ -83,7 +82,7 @@ class Game:
                     now = datetime.now()
                     dt_string = now.strftime("%d-%m-%Y %H:%M:%S")
                     print(f"{dt_string}")  
-                    print("All users have low energy, pausing for 1 hours...")
+                    print("⛔ All users have low energy, pausing for 1 hours...")
                     time.sleep(3600)
                     banner()
                 else:
