@@ -1,7 +1,7 @@
 import json,time,asyncio,websockets,requests, os, sys, threading
 from concurrent.futures import ThreadPoolExecutor
 from core.headers import headers
-from core.info import get_user_dao, get_token, get_username, get_info_energy, get_info_coin, get_fullname, config
+from core.info import get_user_dao, get_token, get_username, get_info_id, get_info_energy, get_info_coin, get_fullname, config
 from datetime import datetime
 
 energy_global = None

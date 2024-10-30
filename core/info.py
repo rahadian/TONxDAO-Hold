@@ -25,6 +25,16 @@ def banner():
 """
     print(f"\033[92m{banner}")
 
+def get_info_id(token):
+    url = (
+        "https://app.production.tonxdao.app/api/v1/profile"
+    )
+    auth_headers = headers(token)
+    response = requests.get(url=url, headers=auth_headers)
+    data = response.json()
+    id_user = data.get('id', None)
+    return id_user
+
 def get_info(token):
     url = (
         "https://app.production.tonxdao.app/api/v1/profile"
@@ -68,8 +78,13 @@ def get_info_energy(token):
     return energy
 
 def get_user_dao(token, max_retries=3, initial_delay=1):
+    id_user = get_info_id(token)
+    
+    if id_user is None:
+        raise Exception("Unable to get user ID")
+    
     url = (
-        "https://app.production.tonxdao.app/api/v1/dao_users"
+        f"https://app.production.tonxdao.app/api/v1/dao-user/{id_user}"
     )
     auth_headers = headers(token)
     for attempt in range(max_retries):
